@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Square, Moon, Sun } from 'lucide-react';
+import { Play, Pause, Square, Moon, Sun, Upload } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTimer } from '@/hooks/useTimer';
+import { useGoogleSheets } from '@/hooks/useGoogleSheets';
 import { dsaTopics } from '@/data/dsaTopics';
 import TopicCard from './TopicCard';
 import SessionModal from './SessionModal';
@@ -19,6 +19,7 @@ const DSATracker = () => {
   const [currentTopic, setCurrentTopic] = useState(null);
   
   const { time, isRunning, start, pause, stop, reset } = useTimer();
+  const { syncToSheets, isLoading: isSyncing, error: syncError } = useGoogleSheets();
 
   const toggleSubtopic = (topicId: string, subtopicId: string) => {
     setProgress(prev => ({
@@ -81,6 +82,15 @@ const DSATracker = () => {
     setShowSessionModal(false);
   };
 
+  const handleGoogleSheetsSync = async () => {
+    try {
+      await syncToSheets(progress, sessionNotes, dsaTopics);
+      alert('Successfully synced to Google Sheets!');
+    } catch (error) {
+      alert('Failed to sync to Google Sheets. Please check your setup.');
+    }
+  };
+
   React.useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -102,15 +112,31 @@ const DSATracker = () => {
             <p className="text-muted-foreground mt-2">Track your Data Structures & Algorithms journey</p>
           </div>
           
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setDarkMode(!darkMode)}
-            className="ml-4"
-          >
-            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={handleGoogleSheetsSync}
+              disabled={isSyncing}
+              className="flex items-center space-x-2"
+            >
+              <Upload className="h-4 w-4" />
+              <span>{isSyncing ? 'Syncing...' : 'Sync to Sheets'}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setDarkMode(!darkMode)}
+            >
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
+
+        {syncError && (
+          <div className="mb-4 p-4 bg-destructive/10 border border-destructive rounded-lg">
+            <p className="text-destructive text-sm">{syncError}</p>
+          </div>
+        )}
 
         {/* Stats Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

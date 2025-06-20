@@ -41,7 +41,7 @@ export function useTimer() {
     };
   }, [timerState.isRunning, timerState.sessionStartTime, timerState.time]);
 
-  const startTimer = () => {
+  const start = () => {
     setTimerState({
       ...timerState,
       isRunning: true,
@@ -49,7 +49,7 @@ export function useTimer() {
     });
   };
 
-  const pauseTimer = () => {
+  const pause = () => {
     if (timerState.sessionStartTime) {
       const elapsed = Math.floor((Date.now() - timerState.sessionStartTime) / 1000);
       setTimerState({
@@ -60,7 +60,18 @@ export function useTimer() {
     }
   };
 
-  const resetTimer = () => {
+  const stop = () => {
+    if (timerState.sessionStartTime) {
+      const elapsed = Math.floor((Date.now() - timerState.sessionStartTime) / 1000);
+      setTimerState({
+        time: timerState.time + elapsed,
+        isRunning: false,
+        sessionStartTime: null
+      });
+    }
+  };
+
+  const reset = () => {
     setTimerState({
       time: 0,
       isRunning: false,
@@ -69,23 +80,12 @@ export function useTimer() {
     setCurrentTime(0);
   };
 
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return {
     time: currentTime,
     isRunning: timerState.isRunning,
-    formatTime,
-    startTimer,
-    pauseTimer,
-    resetTimer
+    start,
+    pause,
+    stop,
+    reset
   };
 }
