@@ -104,8 +104,8 @@ export function useSupabaseData() {
           level: gameData.level,
           streak: gameData.streak,
           lastStudyDate: gameData.last_study_date || '',
-          achievements: gameData.achievements || [],
-          completedQuests: gameData.completed_quests || []
+          achievements: Array.isArray(gameData.achievements) ? gameData.achievements as string[] : [],
+          completedQuests: Array.isArray(gameData.completed_quests) ? gameData.completed_quests as string[] : []
         });
       }
     } catch (error) {
