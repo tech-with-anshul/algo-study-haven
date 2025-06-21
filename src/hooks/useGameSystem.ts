@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 interface GameState {
   xp: number;
@@ -23,16 +22,7 @@ interface Quest {
   icon: string;
 }
 
-export function useGameSystem() {
-  const [gameState, setGameState] = useLocalStorage<GameState>('dsa-game-state', {
-    xp: 0,
-    level: 1,
-    streak: 0,
-    lastStudyDate: '',
-    achievements: [],
-    completedQuests: []
-  });
-
+export function useGameSystem(gameState: GameState, updateGameState: (updates: Partial<GameState>) => Promise<void>) {
   const [quests, setQuests] = useState<Quest[]>([
     {
       id: 'daily-study',
@@ -69,53 +59,48 @@ export function useGameSystem() {
     }
   ]);
 
-  const addXP = (amount: number, reason: string = '') => {
-    setGameState(prev => {
-      const newXP = prev.xp + amount;
-      const newLevel = Math.floor(newXP / 1000) + 1;
-      const leveledUp = newLevel > prev.level;
-      
-      const newAchievements = [...prev.achievements];
-      if (leveledUp) {
-        newAchievements.push(`🎉 Reached Level ${newLevel}!`);
-        if (newLevel === 10) newAchievements.push('🗡️ Logic Adventurer Unlocked!');
-        if (newLevel === 20) newAchievements.push('🛡️ Data Knight Unlocked!');
-        if (newLevel === 30) newAchievements.push('🧙‍♂️ Code Wizard Unlocked!');
-      }
-      
-      if (reason) {
-        newAchievements.push(`💫 ${reason} (+${amount} XP)`);
-      }
+  const addXP = async (amount: number, reason: string = '') => {
+    const newXP = gameState.xp + amount;
+    const newLevel = Math.floor(newXP / 1000) + 1;
+    const leveledUp = newLevel > gameState.level;
+    
+    const newAchievements = [...gameState.achievements];
+    if (leveledUp) {
+      newAchievements.push(`🎉 Reached Level ${newLevel}!`);
+      if (newLevel === 10) newAchievements.push('🗡️ Logic Adventurer Unlocked!');
+      if (newLevel === 20) newAchievements.push('🛡️ Data Knight Unlocked!');
+      if (newLevel === 30) newAchievements.push('🧙‍♂️ Code Wizard Unlocked!');
+    }
+    
+    if (reason) {
+      newAchievements.push(`💫 ${reason} (+${amount} XP)`);
+    }
 
-      return {
-        ...prev,
-        xp: newXP,
-        level: newLevel,
-        achievements: newAchievements.slice(-10) // Keep last 10 achievements
-      };
+    await updateGameState({
+      xp: newXP,
+      level: newLevel,
+      achievements: newAchievements.slice(-10) // Keep last 10 achievements
     });
   };
 
-  const updateStreak = () => {
+  const updateStreak = async () => {
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     
     if (gameState.lastStudyDate === yesterday) {
       // Continue streak
-      setGameState(prev => ({
-        ...prev,
-        streak: prev.streak + 1,
+      await updateGameState({
+        streak: gameState.streak + 1,
         lastStudyDate: today
-      }));
-      addXP(50, 'Streak Bonus');
+      });
+      await addXP(50, 'Streak Bonus');
     } else if (gameState.lastStudyDate !== today) {
       // Start new streak or reset
       const newStreak = gameState.lastStudyDate === '' ? 1 : 1;
-      setGameState(prev => ({
-        ...prev,
+      await updateGameState({
         streak: newStreak,
         lastStudyDate: today
-      }));
+      });
     }
   };
 
@@ -127,33 +112,32 @@ export function useGameSystem() {
     ));
   };
 
-  const completeQuest = (questId: string) => {
+  const completeQuest = async (questId: string) => {
     const quest = quests.find(q => q.id === questId);
     if (quest && !quest.completed) {
-      addXP(quest.xpReward, `Quest: ${quest.title}`);
+      await addXP(quest.xpReward, `Quest: ${quest.title}`);
       setQuests(prev => prev.map(q => 
         q.id === questId ? { ...q, completed: true } : q
       ));
-      setGameState(prev => ({
-        ...prev,
-        completedQuests: [...prev.completedQuests, questId]
-      }));
+      await updateGameState({
+        completedQuests: [...gameState.completedQuests, questId]
+      });
     }
   };
 
-  const onSubtopicComplete = () => {
-    addXP(50, 'Subtopic Mastered');
+  const onSubtopicComplete = async () => {
+    await addXP(50, 'Subtopic Mastered');
     updateQuestProgress('complete-topic', 1);
   };
 
-  const onTopicComplete = () => {
-    addXP(200, 'Topic Conquered');
-    completeQuest('complete-topic');
+  const onTopicComplete = async () => {
+    await addXP(200, 'Topic Conquered');
+    await completeQuest('complete-topic');
   };
 
-  const onStudySession = (duration: number) => {
-    addXP(Math.floor(duration / 60), 'Study Time'); // 1 XP per minute
-    updateStreak();
+  const onStudySession = async (duration: number) => {
+    await addXP(Math.floor(duration / 60), 'Study Time'); // 1 XP per minute
+    await updateStreak();
     updateQuestProgress('daily-study', duration);
     updateQuestProgress('streak-master', gameState.streak + 1);
   };

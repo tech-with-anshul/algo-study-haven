@@ -9,7 +9,132 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      game_state: {
+        Row: {
+          achievements: Json | null
+          completed_quests: Json | null
+          created_at: string
+          id: string
+          last_study_date: string | null
+          level: number
+          streak: number
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          achievements?: Json | null
+          completed_quests?: Json | null
+          created_at?: string
+          id?: string
+          last_study_date?: string | null
+          level?: number
+          streak?: number
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          achievements?: Json | null
+          completed_quests?: Json | null
+          created_at?: string
+          id?: string
+          last_study_date?: string | null
+          level?: number
+          streak?: number
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          subtopic_id: string
+          topic_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          subtopic_id: string
+          topic_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          subtopic_id?: string
+          topic_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      session_notes: {
+        Row: {
+          created_at: string
+          date: string
+          duration: number
+          id: string
+          note: string | null
+          topic: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          duration: number
+          id?: string
+          note?: string | null
+          topic?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          duration?: number
+          id?: string
+          note?: string | null
+          topic?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
