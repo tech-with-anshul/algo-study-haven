@@ -15,6 +15,7 @@ import { Timer, Trophy, Scroll, User } from "lucide-react";
 const Index = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("tracker");
+  const [sessionTime, setSessionTime] = useState(0);
   
   const {
     progress,
@@ -27,46 +28,24 @@ const Index = () => {
     refreshData
   } = useFirebaseSupabaseData();
 
-  const {
-    calculateXP,
-    checkLevelUp,
-    updateStreak,
-    checkAchievements,
-    completeQuest
-  } = useGameSystem(gameState, updateGameState);
+  const gameSystem = useGameSystem({
+    gameState,
+    updateGameState,
+    progress,
+    updateProgress
+  });
 
   const handleProgressUpdate = async (topicId: string, subtopicId: string, completed: boolean) => {
     await updateProgress(topicId, subtopicId, completed);
     
     if (completed) {
-      const xpGained = calculateXP();
-      const newLevel = checkLevelUp(gameState.xp + xpGained);
-      const newStreak = updateStreak();
-      const newAchievements = checkAchievements(progress);
-      
-      await updateGameState({
-        xp: gameState.xp + xpGained,
-        level: newLevel,
-        streak: newStreak,
-        achievements: newAchievements,
-        lastStudyDate: new Date().toISOString().split('T')[0]
-      });
+      await gameSystem.onSubtopicComplete();
     }
   };
 
   const handleSessionSave = async (sessionData: any) => {
     await saveSessionNote(sessionData);
-    
-    const xpGained = Math.floor(sessionData.duration / 60) * 10;
-    const newStreak = updateStreak();
-    const newLevel = checkLevelUp(gameState.xp + xpGained);
-    
-    await updateGameState({
-      xp: gameState.xp + xpGained,
-      level: newLevel,
-      streak: newStreak,
-      lastStudyDate: new Date().toISOString().split('T')[0]
-    });
+    await gameSystem.onStudySession(sessionData.duration || 0);
   };
 
   if (loading) {
@@ -81,7 +60,7 @@ const Index = () => {
   }
 
   return (
-    <AdventureTheme>
+    <AdventureTheme level={gameState.level} xp={gameState.xp} streak={gameState.streak}>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 p-6">
         <div className="container mx-auto max-w-7xl">
           {/* Header */}
@@ -144,7 +123,7 @@ const Index = () => {
               <QuestSystem
                 gameState={gameState}
                 progress={progress}
-                onQuestComplete={completeQuest}
+                onQuestComplete={gameSystem.completeQuest}
               />
             </TabsContent>
 
@@ -161,6 +140,7 @@ const Index = () => {
             isOpen={isSessionModalOpen}
             onClose={() => setIsSessionModalOpen(false)}
             onSave={handleSessionSave}
+            sessionTime={sessionTime}
           />
         </div>
       </div>
