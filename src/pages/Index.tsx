@@ -28,12 +28,7 @@ const Index = () => {
     refreshData
   } = useFirebaseSupabaseData();
 
-  const gameSystem = useGameSystem({
-    gameState,
-    updateGameState,
-    progress,
-    updateProgress
-  });
+  const gameSystem = useGameSystem(gameState, updateGameState);
 
   const handleProgressUpdate = async (topicId: string, subtopicId: string, completed: boolean) => {
     await updateProgress(topicId, subtopicId, completed);
@@ -47,6 +42,16 @@ const Index = () => {
     await saveSessionNote(sessionData);
     await gameSystem.onStudySession(sessionData.duration || 0);
   };
+
+  // Calculate total study time from session notes
+  const totalStudyTime = sessionNotes.reduce((total, session) => total + session.duration, 0);
+  
+  // Calculate completed topics from progress
+  const completedTopics = Object.values(progress).reduce((count, topicProgress) => {
+    const totalSubtopics = Object.keys(topicProgress).length;
+    const completedSubtopics = Object.values(topicProgress).filter(Boolean).length;
+    return totalSubtopics > 0 && completedSubtopics === totalSubtopics ? count + 1 : count;
+  }, 0);
 
   if (loading) {
     return (
@@ -113,16 +118,18 @@ const Index = () => {
 
             <TabsContent value="stats" className="space-y-6">
               <GameStats 
-                gameState={gameState}
-                sessionNotes={sessionNotes}
-                progress={progress}
+                xp={gameState.xp}
+                level={gameState.level}
+                streak={gameState.streak}
+                achievements={gameState.achievements}
+                totalStudyTime={totalStudyTime}
+                completedTopics={completedTopics}
               />
             </TabsContent>
 
             <TabsContent value="quests" className="space-y-6">
               <QuestSystem
-                gameState={gameState}
-                progress={progress}
+                quests={gameSystem.quests}
                 onQuestComplete={gameSystem.completeQuest}
               />
             </TabsContent>
