@@ -110,10 +110,7 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="tracker" className="space-y-6">
-              <DSATracker 
-                progress={progress} 
-                onProgressUpdate={handleProgressUpdate}
-              />
+              <DSATracker />
             </TabsContent>
 
             <TabsContent value="stats" className="space-y-6">
