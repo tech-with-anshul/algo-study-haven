@@ -3,62 +3,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { FirebaseAuthProvider, useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
-import Index from "./pages/Index";
-import FirebaseAuthPage from "./components/FirebaseAuthPage";
+import DSATracker from "./components/DSATracker";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useFirebaseAuth();
-  
-  console.log('ProtectedRoute - User:', user, 'Loading:', loading);
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
-          <p className="text-lg text-muted-foreground">Loading your coding adventure...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (!user) {
-    console.log('ProtectedRoute - No user, redirecting to auth');
-    return <Navigate to="/auth" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useFirebaseAuth();
-  
-  console.log('PublicRoute - User:', user, 'Loading:', loading);
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
-          <p className="text-lg text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (user) {
-    console.log('PublicRoute - User authenticated, redirecting to dashboard');
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return <>{children}</>;
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -66,35 +16,11 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <FirebaseAuthProvider>
-          <Routes>
-            <Route 
-              path="/" 
-              element={
-                <PublicRoute>
-                  <Landing />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/auth" 
-              element={
-                <PublicRoute>
-                  <FirebaseAuthPage />
-                </PublicRoute>
-              } 
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </FirebaseAuthProvider>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/tracker" element={<DSATracker />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

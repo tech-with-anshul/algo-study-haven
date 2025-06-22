@@ -54,7 +54,7 @@ const Landing = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/tracker')}
                 size="lg"
                 className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white font-semibold px-8 py-4 text-lg group"
               >
@@ -208,7 +208,7 @@ const Landing = () => {
               Join thousands of developers who are mastering DSA through our gamified learning platform. Your epic coding journey starts here!
             </p>
             <Button
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/tracker')}
               size="lg"
               className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white font-semibold px-12 py-6 text-xl group"
             >
