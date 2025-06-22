@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Sword, Shield, Zap, Crown, Flame, Star, Trophy, Target } from 'lucide-react';
+import { Sword, Shield, Zap, Crown, Fire, Star, Trophy, Target } from 'lucide-react';
 
 interface GameStatsProps {
   xp: number;
@@ -72,7 +73,7 @@ const GameStats: React.FC<GameStatsProps> = ({
         <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <CardHeader className="pb-2 relative z-10">
           <CardTitle className="text-sm font-bold flex items-center text-orange-600">
-            <Flame className="h-5 w-5 mr-2 animate-pulse" />
+            <Fire className="h-5 w-5 mr-2 animate-pulse" />
             Streak Power
           </CardTitle>
         </CardHeader>

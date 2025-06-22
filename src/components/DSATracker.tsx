@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Square, Moon, Sun, Clock, BookOpen, Sparkles, Brain, Rocket } from 'lucide-react';
+import { Play, Pause, Square, Moon, Sun, Upload, Download, Trophy, Target, Clock, BookOpen, Sparkles, Brain, Rocket } from 'lucide-react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTimer } from '@/hooks/useTimer';
-import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { useGoogleSheets } from '@/hooks/useGoogleSheets';
 import { useGameSystem } from '@/hooks/useGameSystem';
 import { dsaTopics } from '@/data/dsaTopics';
 import TopicCard from './TopicCard';
@@ -14,31 +15,21 @@ import SessionModal from './SessionModal';
 import GameStats from './GameStats';
 import QuestSystem from './QuestSystem';
 import AdventureTheme from './AdventureTheme';
-import UserProfile from './UserProfile';
 import { toast } from '@/hooks/use-toast';
 
 const DSATracker = () => {
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('dark-mode') === 'true';
-  });
+  const [progress, setProgress] = useLocalStorage('dsa-progress', {});
+  const [sessionNotes, setSessionNotes] = useLocalStorage('dsa-session-notes', []);
+  const [darkMode, setDarkMode] = useLocalStorage('dark-mode', false);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [currentTopic, setCurrentTopic] = useState(null);
   const [isBreathing, setIsBreathing] = useState(false);
   
   const { time, isRunning, start, pause, stop, reset } = useTimer();
-  const { 
-    progress, 
-    sessionNotes, 
-    gameState, 
-    loading,
-    updateProgress,
-    saveSessionNote,
-    updateGameState 
-  } = useSupabaseData();
-  
-  const { quests, onSubtopicComplete, onTopicComplete, onStudySession, completeQuest } = useGameSystem(gameState, updateGameState);
+  const { syncToSheets, isLoading: isSyncing } = useGoogleSheets();
+  const { gameState, quests, onSubtopicComplete, onTopicComplete, onStudySession, completeQuest } = useGameSystem();
 
-  // Enhanced breathing animation
+  // Enhanced breathing animation with multiple states
   useEffect(() => {
     if (isRunning) {
       const interval = setInterval(() => {
@@ -48,14 +39,19 @@ const DSATracker = () => {
     }
   }, [isRunning]);
 
-  const toggleSubtopic = async (topicId: string, subtopicId: string) => {
+  const toggleSubtopic = (topicId: string, subtopicId: string) => {
     const wasCompleted = progress[topicId]?.[subtopicId];
-    const newCompleted = !wasCompleted;
     
-    await updateProgress(topicId, subtopicId, newCompleted);
+    setProgress(prev => ({
+      ...prev,
+      [topicId]: {
+        ...prev[topicId],
+        [subtopicId]: !prev[topicId]?.[subtopicId]
+      }
+    }));
 
     // Game system integration
-    if (newCompleted) {
+    if (!wasCompleted) {
       onSubtopicComplete();
       
       // Check if topic is now complete
@@ -122,15 +118,17 @@ const DSATracker = () => {
     }
   };
 
-  const saveSession = async (note: string) => {
-    const sessionData = {
+  const saveSession = (note: string) => {
+    const newSession = {
+      id: Date.now(),
       date: new Date().toISOString(),
       duration: time,
       note: note,
-      topic: currentTopic || ''
+      topic: currentTopic,
+      formattedDuration: formatTime(time)
     };
     
-    await saveSessionNote(sessionData);
+    setSessionNotes(prev => [...prev, newSession]);
     onStudySession(time); // Game system integration
     reset();
     setCurrentTopic(null);
@@ -143,25 +141,73 @@ const DSATracker = () => {
     });
   };
 
+  const handleGoogleSheetsSync = async () => {
+    try {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxePhcjBRPyxlp2g3VT6DAfNIgX9xQV7Dt8IVNSPJV7J870fpPOevpN15mtTE3cJ8RZIA/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'syncProgress',
+          progress,
+          sessionNotes,
+          topics: dsaTopics,
+          gameState
+        })
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "🔄 Sync Successful!",
+          description: "Your adventure progress has been synced to Google Sheets",
+          duration: 3000,
+        });
+      } else {
+        throw new Error('Sync failed');
+      }
+    } catch (error) {
+      toast({
+        title: "❌ Sync Failed",
+        description: "Check your connection to the realm!",
+        variant: "destructive",
+        duration: 4000,
+      });
+    }
+  };
+
+  const exportData = () => {
+    const exportData = {
+      progress,
+      sessionNotes,
+      gameState,
+      exportDate: new Date().toISOString(),
+      totalStudyTime: sessionNotes.reduce((acc, session) => acc + session.duration, 0),
+      overallProgress: calculateOverallProgress()
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dsa-adventure-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "📁 Adventure Data Exported!",
+      description: "Your coding journey has been saved for posterity!",
+      duration: 2000,
+    });
+  };
+
   React.useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('dark-mode', darkMode.toString());
   }, [darkMode]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
-          <p className="text-lg text-muted-foreground">Loading your coding adventure...</p>
-        </div>
-      </div>
-    );
-  }
 
   const overallProgress = calculateOverallProgress();
   const totalStudyTime = sessionNotes.reduce((acc, session) => acc + session.duration, 0);
@@ -170,19 +216,6 @@ const DSATracker = () => {
   return (
     <AdventureTheme level={gameState.level} xp={gameState.xp} streak={gameState.streak}>
       <div className="container mx-auto p-6 max-w-7xl relative z-10">
-        {/* User Profile Header */}
-        <div className="flex justify-between items-center mb-6">
-          <UserProfile />
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setDarkMode(!darkMode)}
-            className="hover:scale-105 transition-all duration-300 bg-background/50 backdrop-blur-sm border-2 hover:border-yellow-500/50 hover:shadow-lg w-12 h-12"
-          >
-            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
-        </div>
-
         {/* Epic Header */}
         <div className="flex items-center justify-between mb-8 p-8 bg-card/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-border/50 animate-fade-in relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-pink-500/5 animate-pulse"></div>
@@ -198,16 +231,46 @@ const DSATracker = () => {
             <p className="text-muted-foreground text-xl font-medium">Embark on an epic coding adventure! Conquer algorithms, master data structures! 🏰</p>
             <div className="flex items-center space-x-4 mt-4">
               <Badge variant="secondary" className="px-4 py-2 text-base hover:scale-105 transition-transform cursor-pointer bg-gradient-to-r from-green-100 to-emerald-100 border-green-300">
-                🏆 {completedTopics}/{dsaTopics.length} Realms Conquered
+                <Trophy className="h-5 w-5 mr-2" />
+                {completedTopics}/{dsaTopics.length} Realms Conquered
               </Badge>
               <Badge variant="outline" className="px-4 py-2 text-base hover:scale-105 transition-transform cursor-pointer border-primary/30 bg-gradient-to-r from-blue-50 to-indigo-50">
-                🎯 {overallProgress}% Quest Complete
+                <Target className="h-5 w-5 mr-2" />
+                {overallProgress}% Quest Complete
               </Badge>
               <Badge variant="outline" className="px-4 py-2 text-base hover:scale-105 transition-transform cursor-pointer border-purple-500/30 bg-gradient-to-r from-purple-50 to-pink-50">
                 <Rocket className="h-5 w-5 mr-2" />
                 Level {gameState.level} Hero
               </Badge>
             </div>
+          </div>
+          
+          <div className="flex space-x-3 relative z-10">
+            <Button
+              variant="outline"
+              onClick={exportData}
+              className="flex items-center space-x-2 hover:scale-105 transition-all duration-300 bg-background/50 backdrop-blur-sm border-2 hover:border-primary/50 hover:shadow-lg"
+            >
+              <Download className="h-5 w-5" />
+              <span className="font-medium">Export Quest Data</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleGoogleSheetsSync}
+              disabled={isSyncing}
+              className="flex items-center space-x-2 hover:scale-105 transition-all duration-300 bg-background/50 backdrop-blur-sm border-2 hover:border-green-500/50 hover:shadow-lg"
+            >
+              <Upload className={`h-5 w-5 ${isSyncing ? 'animate-spin' : ''}`} />
+              <span className="font-medium">{isSyncing ? 'Syncing to Realm...' : 'Sync to Sheets'}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setDarkMode(!darkMode)}
+              className="hover:scale-105 transition-all duration-300 bg-background/50 backdrop-blur-sm border-2 hover:border-yellow-500/50 hover:shadow-lg w-12 h-12"
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
 
@@ -224,7 +287,7 @@ const DSATracker = () => {
         {/* Quest System */}
         <QuestSystem quests={quests} onQuestComplete={completeQuest} />
 
-        {/* Study Timer */}
+        {/* Study Timer with Epic Styling */}
         <Card className="mb-8 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10 border-2 border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-500">
           <CardHeader>
             <CardTitle className="text-2xl font-bold flex items-center text-cyan-600">
@@ -295,7 +358,7 @@ const DSATracker = () => {
           ))}
         </div>
 
-        {/* Motivational Footer */}
+        {/* Motivational Epic Footer */}
         {overallProgress > 0 && (
           <div className="mt-12 text-center p-8 bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 rounded-3xl border border-primary/20 animate-fade-in relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/5 via-orange-400/5 to-red-400/5 animate-pulse"></div>
