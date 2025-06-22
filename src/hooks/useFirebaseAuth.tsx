@@ -30,7 +30,9 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Setting up auth state listener');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('Auth state changed:', firebaseUser?.email);
       setUser(firebaseUser);
       
       if (firebaseUser) {
@@ -46,6 +48,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const syncWithSupabase = async (firebaseUser: User) => {
     try {
+      console.log('Syncing with Supabase for user:', firebaseUser.email);
       // Check if user exists in Supabase profiles table
       const { data: existingProfile } = await supabase
         .from('profiles')
@@ -54,6 +57,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         .single();
 
       if (!existingProfile) {
+        console.log('Creating new profile in Supabase');
         // Create new profile in Supabase
         const { error: profileError } = await supabase
           .from('profiles')
@@ -78,6 +82,8 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (gameStateError) {
           console.error('Error creating game state:', gameStateError);
         }
+      } else {
+        console.log('User profile already exists in Supabase');
       }
     } catch (error) {
       console.error('Error syncing with Supabase:', error);
@@ -86,6 +92,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signInWithEmail = async (email: string, password: string) => {
     try {
+      console.log('Signing in with email:', email);
       await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "⚔️ Welcome Back, Hero!",
@@ -93,6 +100,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         duration: 3000,
       });
     } catch (error: any) {
+      console.error('Email sign in error:', error);
       toast({
         title: "❌ Sign In Failed",
         description: error.message,
@@ -104,6 +112,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signUpWithEmail = async (email: string, password: string) => {
     try {
+      console.log('Signing up with email:', email);
       await createUserWithEmailAndPassword(auth, email, password);
       toast({
         title: "🎉 Welcome to the Adventure!",
@@ -111,6 +120,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         duration: 5000,
       });
     } catch (error: any) {
+      console.error('Email sign up error:', error);
       toast({
         title: "❌ Sign Up Failed",
         description: error.message,
@@ -122,6 +132,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signInWithGoogle = async () => {
     try {
+      console.log('Signing in with Google');
       await signInWithPopup(auth, googleProvider);
       toast({
         title: "🚀 Google Sign In Successful!",
@@ -129,6 +140,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         duration: 3000,
       });
     } catch (error: any) {
+      console.error('Google sign in error:', error);
       toast({
         title: "❌ Google Sign In Failed",
         description: error.message,
@@ -140,6 +152,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signInWithTwitter = async () => {
     try {
+      console.log('Signing in with Twitter');
       await signInWithPopup(auth, twitterProvider);
       toast({
         title: "🐦 Twitter Sign In Successful!",
@@ -147,6 +160,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         duration: 3000,
       });
     } catch (error: any) {
+      console.error('Twitter sign in error:', error);
       toast({
         title: "❌ Twitter Sign In Failed",
         description: error.message,
@@ -158,6 +172,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signInWithGithub = async () => {
     try {
+      console.log('Signing in with GitHub');
       await signInWithPopup(auth, githubProvider);
       toast({
         title: "🐙 GitHub Sign In Successful!",
@@ -165,6 +180,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         duration: 3000,
       });
     } catch (error: any) {
+      console.error('GitHub sign in error:', error);
       toast({
         title: "❌ GitHub Sign In Failed",
         description: error.message,
@@ -176,6 +192,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signOut = async () => {
     try {
+      console.log('Signing out');
       await firebaseSignOut(auth);
       toast({
         title: "👋 See You Later!",
@@ -183,7 +200,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         duration: 3000,
       });
       // Force page reload for clean state
-      window.location.href = '/auth';
+      window.location.href = '/';
     } catch (error: any) {
       console.error('Error signing out:', error);
     }

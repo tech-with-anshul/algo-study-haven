@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ const FirebaseAuthPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const { 
     signInWithEmail, 
@@ -32,7 +34,9 @@ const FirebaseAuthPage = () => {
       } else {
         await signInWithEmail(email, password);
       }
+      // Navigation will be handled by the auth state change in useFirebaseAuth
     } catch (error) {
+      console.error('Auth error:', error);
       // Error handling is done in the auth hook
     } finally {
       setIsLoading(false);
@@ -52,7 +56,9 @@ const FirebaseAuthPage = () => {
           await signInWithTwitter();
           break;
       }
+      // Navigation will be handled by the auth state change
     } catch (error) {
+      console.error('Social auth error:', error);
       // Error handling is done in the auth hook
     }
   };

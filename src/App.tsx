@@ -15,6 +15,8 @@ const queryClient = new QueryClient();
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useFirebaseAuth();
   
+  console.log('ProtectedRoute - User:', user, 'Loading:', loading);
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center justify-center">
@@ -27,6 +29,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   if (!user) {
+    console.log('ProtectedRoute - No user, redirecting to auth');
     return <Navigate to="/auth" replace />;
   }
   
@@ -35,6 +38,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useFirebaseAuth();
+  
+  console.log('PublicRoute - User:', user, 'Loading:', loading);
   
   if (loading) {
     return (
@@ -48,6 +53,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   if (user) {
+    console.log('PublicRoute - User authenticated, redirecting to dashboard');
     return <Navigate to="/dashboard" replace />;
   }
   
@@ -62,7 +68,14 @@ const App = () => (
       <BrowserRouter>
         <FirebaseAuthProvider>
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route 
+              path="/" 
+              element={
+                <PublicRoute>
+                  <Landing />
+                </PublicRoute>
+              } 
+            />
             <Route 
               path="/dashboard" 
               element={
