@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,6 @@ const FirebaseAuthPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const { 
     signInWithEmail, 
@@ -34,7 +32,7 @@ const FirebaseAuthPage = () => {
       } else {
         await signInWithEmail(email, password);
       }
-      // Navigation will be handled by the auth state change in useFirebaseAuth
+      // Navigation will be handled by the auth state change
     } catch (error) {
       console.error('Auth error:', error);
       // Error handling is done in the auth hook
@@ -45,6 +43,7 @@ const FirebaseAuthPage = () => {
 
   const handleSocialAuth = async (provider: 'google' | 'github' | 'twitter') => {
     try {
+      setIsLoading(true);
       switch (provider) {
         case 'google':
           await signInWithGoogle();
@@ -60,6 +59,8 @@ const FirebaseAuthPage = () => {
     } catch (error) {
       console.error('Social auth error:', error);
       // Error handling is done in the auth hook
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,6 +102,7 @@ const FirebaseAuthPage = () => {
               onClick={() => handleSocialAuth('google')}
               variant="outline"
               className="w-full flex items-center justify-center space-x-2 hover:bg-red-50 hover:border-red-200 transition-colors"
+              disabled={isLoading}
             >
               <Chrome className="h-5 w-5 text-red-500" />
               <span>Continue with Google</span>
@@ -110,6 +112,7 @@ const FirebaseAuthPage = () => {
               onClick={() => handleSocialAuth('github')}
               variant="outline"
               className="w-full flex items-center justify-center space-x-2 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+              disabled={isLoading}
             >
               <Github className="h-5 w-5" />
               <span>Continue with GitHub</span>
@@ -119,6 +122,7 @@ const FirebaseAuthPage = () => {
               onClick={() => handleSocialAuth('twitter')}
               variant="outline"
               className="w-full flex items-center justify-center space-x-2 hover:bg-blue-50 hover:border-blue-200 transition-colors"
+              disabled={isLoading}
             >
               <Twitter className="h-5 w-5 text-blue-500" />
               <span>Continue with Twitter</span>
@@ -144,6 +148,7 @@ const FirebaseAuthPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -158,6 +163,7 @@ const FirebaseAuthPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -182,6 +188,7 @@ const FirebaseAuthPage = () => {
             <button
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              disabled={isLoading}
             >
               {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
             </button>

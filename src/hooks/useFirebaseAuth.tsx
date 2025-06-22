@@ -32,12 +32,18 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     console.log('Setting up auth state listener');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('Auth state changed:', firebaseUser?.email);
+      console.log('Auth state changed:', firebaseUser?.email || 'No user');
       setUser(firebaseUser);
       
       if (firebaseUser) {
         // Sync Firebase user with Supabase
         await syncWithSupabase(firebaseUser);
+        // Redirect to dashboard after successful auth
+        setTimeout(() => {
+          if (window.location.pathname === '/auth') {
+            window.location.href = '/dashboard';
+          }
+        }, 100);
       }
       
       setLoading(false);
@@ -93,6 +99,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const signInWithEmail = async (email: string, password: string) => {
     try {
       console.log('Signing in with email:', email);
+      setLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "⚔️ Welcome Back, Hero!",
@@ -106,6 +113,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         description: error.message,
         variant: "destructive",
       });
+      setLoading(false);
       throw error;
     }
   };
@@ -113,6 +121,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const signUpWithEmail = async (email: string, password: string) => {
     try {
       console.log('Signing up with email:', email);
+      setLoading(true);
       await createUserWithEmailAndPassword(auth, email, password);
       toast({
         title: "🎉 Welcome to the Adventure!",
@@ -126,6 +135,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         description: error.message,
         variant: "destructive",
       });
+      setLoading(false);
       throw error;
     }
   };
@@ -133,6 +143,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const signInWithGoogle = async () => {
     try {
       console.log('Signing in with Google');
+      setLoading(true);
       await signInWithPopup(auth, googleProvider);
       toast({
         title: "🚀 Google Sign In Successful!",
@@ -146,6 +157,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         description: error.message,
         variant: "destructive",
       });
+      setLoading(false);
       throw error;
     }
   };
@@ -153,6 +165,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const signInWithTwitter = async () => {
     try {
       console.log('Signing in with Twitter');
+      setLoading(true);
       await signInWithPopup(auth, twitterProvider);
       toast({
         title: "🐦 Twitter Sign In Successful!",
@@ -166,6 +179,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         description: error.message,
         variant: "destructive",
       });
+      setLoading(false);
       throw error;
     }
   };
@@ -173,6 +187,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const signInWithGithub = async () => {
     try {
       console.log('Signing in with GitHub');
+      setLoading(true);
       await signInWithPopup(auth, githubProvider);
       toast({
         title: "🐙 GitHub Sign In Successful!",
@@ -186,6 +201,7 @@ export const FirebaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         description: error.message,
         variant: "destructive",
       });
+      setLoading(false);
       throw error;
     }
   };
