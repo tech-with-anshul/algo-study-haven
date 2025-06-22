@@ -31,6 +31,7 @@ const Index = () => {
   const gameSystem = useGameSystem(gameState, updateGameState);
 
   const handleProgressUpdate = async (topicId: string, subtopicId: string, completed: boolean) => {
+    console.log('Updating progress:', topicId, subtopicId, completed);
     await updateProgress(topicId, subtopicId, completed);
     
     if (completed) {
@@ -39,6 +40,7 @@ const Index = () => {
   };
 
   const handleSessionSave = async (sessionData: any) => {
+    console.log('Saving session:', sessionData);
     await saveSessionNote(sessionData);
     await gameSystem.onStudySession(sessionData.duration || 0);
   };
@@ -52,6 +54,8 @@ const Index = () => {
     const completedSubtopics = Object.values(topicProgress).filter(Boolean).length;
     return totalSubtopics > 0 && completedSubtopics === totalSubtopics ? count + 1 : count;
   }, 0);
+
+  console.log('Index component - loading:', loading, 'progress:', progress, 'gameState:', gameState);
 
   if (loading) {
     return (
@@ -88,6 +92,16 @@ const Index = () => {
             </div>
           </div>
 
+          {/* Debug info */}
+          <div className="mb-4 p-4 bg-card rounded-lg border">
+            <h3 className="font-semibold mb-2">Debug Info:</h3>
+            <p>Loading: {loading.toString()}</p>
+            <p>Progress keys: {Object.keys(progress).length}</p>
+            <p>Session notes: {sessionNotes.length}</p>
+            <p>Game State XP: {gameState.xp}</p>
+            <p>Game State Level: {gameState.level}</p>
+          </div>
+
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-4 bg-card/50 backdrop-blur-sm">
@@ -110,7 +124,11 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="tracker" className="space-y-6">
-              <DSATracker />
+              <div className="bg-card p-6 rounded-lg border">
+                <h2 className="text-2xl font-bold mb-4">DSA Quest Tracker</h2>
+                <p className="text-muted-foreground mb-4">Track your progress through Data Structures and Algorithms!</p>
+                <DSATracker />
+              </div>
             </TabsContent>
 
             <TabsContent value="stats" className="space-y-6">
@@ -132,9 +150,21 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="profile" className="space-y-6">
-              <div className="text-center p-8">
+              <div className="bg-card p-8 rounded-lg border text-center">
                 <h2 className="text-2xl font-bold mb-4">Hero Profile</h2>
-                <p className="text-muted-foreground">Your coding journey and achievements will be displayed here.</p>
+                <div className="space-y-4">
+                  <div className="text-left max-w-md mx-auto">
+                    <h3 className="font-semibold mb-2">Your Stats:</h3>
+                    <ul className="space-y-2 text-sm">
+                      <li>Level: {gameState.level}</li>
+                      <li>XP: {gameState.xp}</li>
+                      <li>Streak: {gameState.streak} days</li>
+                      <li>Study Time: {Math.floor(totalStudyTime / 3600)}h {Math.floor((totalStudyTime % 3600) / 60)}m</li>
+                      <li>Topics Completed: {completedTopics}</li>
+                      <li>Sessions: {sessionNotes.length}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
