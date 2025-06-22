@@ -1,8 +1,8 @@
 
-import DSATracker from '@/components/DSATracker';
+import LandingPage from '@/components/LandingPage';
 
 const Index = () => {
-  return <DSATracker />;
+  return <LandingPage />;
 };
 
 export default Index;
