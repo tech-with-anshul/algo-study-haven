@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Code, Trophy, Target, Zap, BookOpen, Users, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, Code, Trophy, Target, Zap, BookOpen, Users, Star, CheckCircle, Mail, Phone, Globe, Github, Linkedin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
@@ -155,6 +155,106 @@ const LandingPage = () => {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* The Creator Section */}
+      <div className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              The Creator
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Meet the developer behind this amazing DSA learning platform
+            </p>
+          </div>
+          
+          <Card className="max-w-4xl mx-auto border-2 border-purple-100 hover:border-purple-200 shadow-xl hover:shadow-2xl transition-all duration-500">
+            <CardContent className="p-8">
+              <div className="flex flex-col lg:flex-row items-center gap-8">
+                {/* Profile Image */}
+                <div className="flex-shrink-0">
+                  <div className="relative">
+                    <img 
+                      src="https://res.cloudinary.com/djrttnwvt/image/upload/v1750468177/DAY_1_ppbvml.jpg" 
+                      alt="Anshul - The Creator"
+                      className="w-64 h-64 object-cover rounded-full border-4 border-purple-200 shadow-lg hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-3 rounded-full shadow-lg">
+                      <Code className="h-6 w-6" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Creator Info */}
+                <div className="flex-1 text-center lg:text-left">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">Anshul</h3>
+                  <Badge className="mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-sm px-3 py-1">
+                    Full Stack Developer
+                  </Badge>
+                  
+                  <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                    Passionate about creating innovative educational tools that make learning programming 
+                    concepts engaging and accessible. With expertise in modern web technologies, I've crafted 
+                    this gamified platform to transform how developers master Data Structures and Algorithms.
+                  </p>
+                  
+                  {/* Contact Links */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <a 
+                      href="https://www.dev-anshul.tech/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-300 group"
+                    >
+                      <Globe className="h-5 w-5 text-purple-600 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium text-purple-700">Official Website</span>
+                    </a>
+                    
+                    <a 
+                      href="mailto:kanshulmussoorie@gmail.com"
+                      className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-lg border border-green-200 hover:border-green-300 transition-all duration-300 group"
+                    >
+                      <Mail className="h-5 w-5 text-green-600 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium text-green-700">Email</span>
+                    </a>
+                    
+                    <a 
+                      href="tel:+919410147660"
+                      className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-300 group"
+                    >
+                      <Phone className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium text-blue-700">+91 9410147660</span>
+                    </a>
+                    
+                    <a 
+                      href="https://www.linkedin.com/in/anshultech1" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-indigo-50 to-blue-50 hover:from-indigo-100 hover:to-blue-100 rounded-lg border border-indigo-200 hover:border-indigo-300 transition-all duration-300 group"
+                    >
+                      <Linkedin className="h-5 w-5 text-indigo-600 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium text-indigo-700">LinkedIn</span>
+                    </a>
+                  </div>
+                  
+                  {/* GitHub Link */}
+                  <div className="mt-4">
+                    <a 
+                      href="https://github.com/tech-with-anshul" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 p-3 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white rounded-lg transition-all duration-300 group shadow-lg hover:shadow-xl"
+                    >
+                      <Github className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium">Follow on GitHub</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
