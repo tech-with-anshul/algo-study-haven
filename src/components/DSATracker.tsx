@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,130 +171,131 @@ const DSATracker = () => {
     const totalStudyTime = sessionNotes.reduce((acc, session) => acc + session.duration, 0);
     const completedTopics = allTopics.filter(topic => calculateTopicProgress(topic.id) === 100).length;
     
-    // Page colors and styling
-    const primaryColor = [88, 28, 135]; // Purple
-    const accentColor = [147, 51, 234]; // Light purple
-    const textColor = [31, 41, 55]; // Dark gray
-    const lightGray = [156, 163, 175];
+    // Clean color palette
+    const primaryColor = [37, 99, 235]; // Blue
+    const secondaryColor = [99, 102, 241]; // Indigo
+    const accentColor = [16, 185, 129]; // Emerald
+    const textColor = [31, 41, 55]; // Gray-800
+    const lightGray = [156, 163, 175]; // Gray-400
+    const darkGray = [75, 85, 99]; // Gray-600
     
-    // Cover Page - Enhanced Design
+    // Cover Page
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, 0, 210, 297, 'F'); // Full page background
+    doc.rect(0, 0, 210, 297, 'F');
     
-    // Decorative header
+    // Header section
     doc.setFillColor(255, 255, 255, 0.1);
-    doc.rect(0, 0, 210, 80, 'F');
+    doc.rect(0, 0, 210, 60, 'F');
     
-    // Main title with enhanced styling
+    // Title
     doc.setTextColor(255, 255, 255);
+    doc.setFontSize(32);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DSA Learning Progress Report', 105, 40, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Data Structures & Algorithms Mastery Journey', 105, 55, { align: 'center' });
+    
+    // Progress circle
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(4);
+    doc.circle(105, 120, 35);
+    
     doc.setFontSize(36);
     doc.setFont('helvetica', 'bold');
-    doc.text('🗡️ DSA Adventure Quest', 105, 50, { align: 'center' });
+    doc.text(`${overallProgress}%`, 105, 128, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('Complete', 105, 140, { align: 'center' });
     
+    // Key statistics
+    const statsY = 180;
+    const boxWidth = 50;
+    const boxHeight = 35;
+    
+    // Topics Completed
+    doc.setFillColor(255, 255, 255, 0.15);
+    doc.rect(20, statsY, boxWidth, boxHeight, 'F');
     doc.setFontSize(24);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Progress Report', 105, 70, { align: 'center' });
-    
-    // Progress circle simulation
-    doc.setDrawColor(255, 255, 255);
-    doc.setLineWidth(3);
-    doc.circle(105, 130, 40);
-    
-    doc.setFontSize(28);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${overallProgress}%`, 105, 135, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('Overall Progress', 105, 145, { align: 'center' });
-    
-    // Key stats boxes
-    const statsY = 190;
-    const boxWidth = 45;
-    const boxHeight = 30;
-    
-    // Topics Completed Box
-    doc.setFillColor(255, 255, 255, 0.2);
-    doc.rect(25, statsY, boxWidth, boxHeight, 'F');
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${completedTopics}`, 47.5, statsY + 15, { align: 'center' });
+    doc.text(`${completedTopics}`, 45, statsY + 18, { align: 'center' });
     doc.setFontSize(10);
-    doc.text('Topics', 47.5, statsY + 25, { align: 'center' });
+    doc.text('Topics Mastered', 45, statsY + 28, { align: 'center' });
     
-    // Study Time Box
+    // Study Time
     doc.rect(80, statsY, boxWidth, boxHeight, 'F');
-    doc.setFontSize(18);
-    doc.text(`${Math.floor(totalStudyTime / 3600)}h`, 102.5, statsY + 15, { align: 'center' });
+    doc.setFontSize(24);
+    doc.text(`${Math.floor(totalStudyTime / 3600)}`, 105, statsY + 18, { align: 'center' });
     doc.setFontSize(10);
-    doc.text('Study Time', 102.5, statsY + 25, { align: 'center' });
+    doc.text('Hours Studied', 105, statsY + 28, { align: 'center' });
     
-    // Level Box
-    doc.rect(135, statsY, boxWidth, boxHeight, 'F');
-    doc.setFontSize(18);
-    doc.text(`L${gameState.level || 1}`, 157.5, statsY + 15, { align: 'center' });
+    // Level
+    doc.rect(140, statsY, boxWidth, boxHeight, 'F');
+    doc.setFontSize(24);
+    doc.text(`${gameState.level || 1}`, 165, statsY + 18, { align: 'center' });
     doc.setFontSize(10);
-    doc.text('Level', 157.5, statsY + 25, { align: 'center' });
+    doc.text('Current Level', 165, statsY + 28, { align: 'center' });
     
-    // Date and user info
+    // Date
     doc.setFontSize(12);
     doc.setTextColor(255, 255, 255, 0.8);
-    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 250, { align: 'center' });
-    doc.text(`Level ${gameState.level || 1} Coding Hero • ${gameState.xp || 0} XP`, 105, 265, { align: 'center' });
+    doc.text(`Report Generated: ${new Date().toLocaleDateString()}`, 105, 250, { align: 'center' });
+    doc.text(`Student Level: ${gameState.level || 1} | Experience: ${gameState.xp || 0} XP`, 105, 265, { align: 'center' });
     
-    // New Page - Detailed Progress
+    // Page 2 - Overview
     doc.addPage();
     doc.setFillColor(255, 255, 255);
     doc.rect(0, 0, 210, 297, 'F');
     
     // Header
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setFontSize(24);
+    doc.setFontSize(28);
     doc.setFont('helvetica', 'bold');
-    doc.text('📊 Detailed Progress Overview', 20, 30);
+    doc.text('Progress Overview', 20, 30);
     
-    // Decorative line
-    doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setLineWidth(2);
     doc.line(20, 35, 190, 35);
     
-    // Progress Overview Section
+    // Summary section
     doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('🎯 Achievement Summary', 20, 55);
+    doc.text('Learning Summary', 20, 55);
     
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     let yPos = 70;
     
-    const achievements = [
-      `📈 Overall Progress: ${overallProgress}% Complete`,
-      `🏆 Topics Mastered: ${completedTopics} out of ${allTopics.length}`,
-      `⏰ Total Study Time: ${Math.floor(totalStudyTime / 3600)}h ${Math.floor((totalStudyTime % 3600) / 60)}m`,
-      `🎮 Current Level: ${gameState.level || 1}`,
-      `⭐ Experience Points: ${gameState.xp || 0} XP`,
-      `🔥 Study Streak: ${gameState.streak || 0} days`,
-      `📚 Study Sessions: ${sessionNotes.length} completed`
+    const summaryItems = [
+      `Overall Progress: ${overallProgress}% Complete`,
+      `Topics Completed: ${completedTopics} out of ${allTopics.length}`,
+      `Total Study Time: ${Math.floor(totalStudyTime / 3600)} hours ${Math.floor((totalStudyTime % 3600) / 60)} minutes`,
+      `Current Level: ${gameState.level || 1}`,
+      `Experience Points: ${gameState.xp || 0} XP`,
+      `Study Sessions: ${sessionNotes.length} completed`,
+      `Learning Streak: ${gameState.streak || 0} days`
     ];
     
-    achievements.forEach((achievement) => {
-      doc.text(achievement, 30, yPos);
-      yPos += 12;
+    summaryItems.forEach((item) => {
+      doc.text(`• ${item}`, 30, yPos);
+      yPos += 10;
     });
     
-    // Topic Progress Section
+    // Topic Progress
     yPos += 20;
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text('🎯 Topic Mastery Breakdown', 20, yPos);
-    yPos += 20;
+    doc.text('Topic Breakdown', 20, yPos);
+    yPos += 15;
     
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     
-    allTopics.forEach((topic, index) => {
-      if (yPos > 270) {
+    allTopics.forEach((topic) => {
+      if (yPos > 260) {
         doc.addPage();
         yPos = 30;
       }
@@ -303,20 +303,21 @@ const DSATracker = () => {
       const topicProgress = calculateTopicProgress(topic.id);
       const completed = topic.subtopics.filter(sub => progress[topic.id]?.[sub.id]).length;
       
-      // Progress bar simulation
+      // Progress bar
       doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.rect(30, yPos - 3, 100, 4, 'F');
+      doc.rect(30, yPos - 2, 80, 3, 'F');
       doc.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.rect(30, yPos - 3, (topicProgress / 100) * 100, 4, 'F');
+      doc.rect(30, yPos - 2, (topicProgress / 100) * 80, 3, 'F');
       
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      doc.text(`${topic.icon} ${topic.name}`, 30, yPos + 8);
-      doc.text(`${topicProgress}% (${completed}/${topic.subtopics.length})`, 140, yPos + 8);
+      doc.text(`${topic.name}`, 30, yPos + 8);
+      doc.text(`${topicProgress}%`, 120, yPos + 8);
+      doc.text(`(${completed}/${topic.subtopics.length})`, 140, yPos + 8);
       
-      yPos += 15;
+      yPos += 18;
     });
     
-    // Recent Study Sessions
+    // Study Sessions
     if (sessionNotes.length > 0) {
       if (yPos > 200) {
         doc.addPage();
@@ -328,14 +329,14 @@ const DSATracker = () => {
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('📚 Recent Study Sessions', 20, yPos);
-      yPos += 20;
+      doc.text('Recent Study Sessions', 20, yPos);
+      yPos += 15;
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       
-      const recentSessions = sessionNotes.slice(-8).reverse();
+      const recentSessions = sessionNotes.slice(-10).reverse();
       
       recentSessions.forEach((session) => {
         if (yPos > 270) {
@@ -344,14 +345,15 @@ const DSATracker = () => {
         }
         
         const sessionDate = new Date(session.date).toLocaleDateString();
-        doc.text(`📅 ${sessionDate}`, 30, yPos);
-        doc.text(`⏱️ ${session.formattedDuration}`, 100, yPos);
+        doc.text(`Date: ${sessionDate}`, 30, yPos);
+        doc.text(`Duration: ${session.formattedDuration}`, 120, yPos);
         
         if (session.note) {
           yPos += 8;
           doc.setFontSize(9);
-          doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
-          doc.text(`💭 ${session.note.substring(0, 70)}${session.note.length > 70 ? '...' : ''}`, 35, yPos);
+          doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+          const noteText = session.note.length > 60 ? session.note.substring(0, 60) + '...' : session.note;
+          doc.text(`Notes: ${noteText}`, 35, yPos);
           doc.setFontSize(10);
           doc.setTextColor(textColor[0], textColor[1], textColor[2]);
         }
@@ -359,120 +361,88 @@ const DSATracker = () => {
       });
     }
     
-    // Achievements Page
-    if (gameState.achievements && gameState.achievements.length > 0) {
-      doc.addPage();
-      yPos = 30;
-      
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('🏆 Unlocked Achievements', 20, yPos);
-      yPos += 20;
-      
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      
-      gameState.achievements.forEach((achievement) => {
-        if (yPos > 270) {
-          doc.addPage();
-          yPos = 30;
-        }
-        doc.text(`🎖️ ${achievement}`, 30, yPos);
-        yPos += 12;
-      });
-    }
-    
-    // Credits and Contact Page
+    // Contact Information Page
     doc.addPage();
-    
-    // Background gradient effect
     doc.setFillColor(248, 250, 252);
     doc.rect(0, 0, 210, 297, 'F');
     
-    // Header section
+    // Header
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, 0, 210, 60, 'F');
+    doc.rect(0, 0, 210, 50, 'F');
     
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
-    doc.text('🚀 Created with Passion', 105, 35, { align: 'center' });
+    doc.text('About the Developer', 105, 32, { align: 'center' });
     
-    // Main content
+    // Content
     doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('👨‍💻 About the Creator', 105, 90, { align: 'center' });
+    doc.text('DSA Adventure Quest', 105, 80, { align: 'center' });
     
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text('This DSA Adventure Quest tracker was crafted with love and dedication', 105, 110, { align: 'center' });
-    doc.text('to help developers master Data Structures and Algorithms in a fun,', 105, 125, { align: 'center' });
-    doc.text('gamified way. Every feature is designed to make learning enjoyable!', 105, 140, { align: 'center' });
+    doc.text('A comprehensive Data Structures and Algorithms learning tracker', 105, 95, { align: 'center' });
+    doc.text('designed to make programming education engaging and effective.', 105, 107, { align: 'center' });
     
-    // Contact section with styled boxes
-    yPos = 170;
-    doc.setFontSize(16);
+    // Contact section
+    yPos = 140;
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text('📞 Get in Touch', 105, yPos, { align: 'center' });
+    doc.text('Contact Information', 105, yPos, { align: 'center' });
     
     yPos += 25;
     
-    // Contact info boxes
-    const contactItems = [
-      { icon: '🌐', label: 'Website', value: 'https://www.dev-anshul.tech/' },
-      { icon: '📧', label: 'Email', value: 'Contact available on website' },
-      { icon: '📱', label: 'Phone', value: 'Contact details on website' }
+    const contactInfo = [
+      { label: 'Website', value: 'https://www.dev-anshul.tech/' },
+      { label: 'Email', value: 'Available on website' },
+      { label: 'Phone', value: 'Contact details on website' }
     ];
     
-    contactItems.forEach((item, index) => {
-      // Box background
+    contactInfo.forEach((info) => {
       doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
       doc.setLineWidth(1);
-      doc.rect(30, yPos - 5, 150, 20, 'FD');
+      doc.rect(30, yPos - 5, 150, 18, 'FD');
       
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
-      doc.text(`${item.icon} ${item.label}:`, 35, yPos + 5);
+      doc.text(`${info.label}:`, 35, yPos + 3);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.text(item.value, 35, yPos + 15);
+      doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+      doc.text(info.value, 35, yPos + 10);
       
-      yPos += 35;
+      yPos += 25;
     });
     
-    // Footer message
-    yPos += 20;
+    // Footer
+    yPos += 30;
     doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('Thank you for using DSA Adventure Quest!', 105, yPos, { align: 'center' });
-    doc.text('Keep coding, keep learning, keep growing! 🌟', 105, yPos + 12, { align: 'center' });
+    doc.text('Keep learning and growing your programming skills.', 105, yPos + 12, { align: 'center' });
     
-    // Decorative elements
-    doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
-    doc.setLineWidth(2);
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setLineWidth(1);
     doc.line(60, yPos + 25, 150, yPos + 25);
     
-    // Final branding
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('🏰 DSA Adventure Quest - Your Coding Journey Companion', 105, 285, { align: 'center' });
+    doc.text('DSA Adventure Quest - Programming Education Made Simple', 105, 285, { align: 'center' });
     
-    // Save the PDF
-    const fileName = `DSA-Adventure-Report-${new Date().toISOString().split('T')[0]}.pdf`;
+    // Save PDF
+    const fileName = `DSA-Progress-Report-${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
     
     toast({
-      title: "🎉 Epic Report Generated!",
-      description: "Your beautifully crafted learning progress report has been downloaded! Share your achievements with pride! ✨",
-      duration: 5000,
+      title: "Report Generated Successfully!",
+      description: "Your clean and professional progress report has been downloaded.",
+      duration: 4000,
     });
   };
 
@@ -526,15 +496,14 @@ const DSATracker = () => {
             <Button
               variant="outline"
               onClick={generatePDFReport}
-              className="flex items-center space-x-3 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-emerald-50 via-green-50 to-teal-50 backdrop-blur-sm border-2 hover:border-emerald-500/50 hover:shadow-2xl text-emerald-700 font-bold px-8 py-4 rounded-2xl group relative overflow-hidden"
+              className="flex items-center space-x-3 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 backdrop-blur-sm border-2 hover:border-blue-500/50 hover:shadow-xl text-blue-700 font-semibold px-6 py-3 rounded-xl group relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-green-400/20 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
-              <Download className="h-6 w-6 group-hover:animate-bounce relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+              <Download className="h-5 w-5 group-hover:animate-bounce relative z-10" />
               <div className="flex flex-col items-start relative z-10">
-                <span className="text-lg">Generate Epic Report</span>
-                <span className="text-xs opacity-75">Download your adventure progress!</span>
+                <span className="text-base">Download Report</span>
+                <span className="text-xs opacity-75">Professional PDF</span>
               </div>
-              <Sparkles className="h-4 w-4 text-yellow-500 group-hover:animate-spin relative z-10" />
             </Button>
             <Button
               variant="outline"
