@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,122 +171,307 @@ const DSATracker = () => {
     const totalStudyTime = sessionNotes.reduce((acc, session) => acc + session.duration, 0);
     const completedTopics = allTopics.filter(topic => calculateTopicProgress(topic.id) === 100).length;
     
-    // Header
+    // Page colors and styling
+    const primaryColor = [88, 28, 135]; // Purple
+    const accentColor = [147, 51, 234]; // Light purple
+    const textColor = [31, 41, 55]; // Dark gray
+    const lightGray = [156, 163, 175];
+    
+    // Cover Page - Enhanced Design
+    doc.setFillColor(88, 28, 135);
+    doc.rect(0, 0, 210, 297, 'F'); // Full page background
+    
+    // Decorative header
+    doc.setFillColor(255, 255, 255, 0.1);
+    doc.rect(0, 0, 210, 80, 'F');
+    
+    // Main title with enhanced styling
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(36);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🗡️ DSA Adventure Quest', 105, 50, { align: 'center' });
+    
     doc.setFontSize(24);
-    doc.setTextColor(88, 28, 135); // Purple color
-    doc.text('DSA Learning Progress Report', 20, 30);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Progress Report', 105, 70, { align: 'center' });
     
-    // Date and basic info
+    // Progress circle simulation
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(3);
+    doc.circle(105, 130, 40);
+    
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${overallProgress}%`, 105, 135, { align: 'center' });
     doc.setFontSize(12);
-    doc.setTextColor(75, 85, 99); // Gray color
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 45);
-    doc.text(`Report for: ${gameState.level ? `Level ${gameState.level} Hero` : 'Learning Adventurer'}`, 20, 55);
+    doc.text('Overall Progress', 105, 145, { align: 'center' });
     
-    // Progress Overview
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text('📊 Progress Overview', 20, 75);
+    // Key stats boxes
+    const statsY = 190;
+    const boxWidth = 45;
+    const boxHeight = 30;
     
-    doc.setFontSize(12);
-    doc.text(`Overall Progress: ${overallProgress}%`, 30, 90);
-    doc.text(`Topics Completed: ${completedTopics}/${allTopics.length}`, 30, 100);
-    doc.text(`Total Study Time: ${Math.floor(totalStudyTime / 3600)}h ${Math.floor((totalStudyTime % 3600) / 60)}m`, 30, 110);
-    doc.text(`Current Level: ${gameState.level || 1}`, 30, 120);
-    doc.text(`Experience Points: ${gameState.xp || 0} XP`, 30, 130);
-    doc.text(`Study Streak: ${gameState.streak || 0} days`, 30, 140);
-    
-    // Topic Progress
-    doc.setFontSize(16);
-    doc.text('🎯 Topic Progress', 20, 160);
-    
-    let yPosition = 175;
+    // Topics Completed Box
+    doc.setFillColor(255, 255, 255, 0.2);
+    doc.rect(25, statsY, boxWidth, boxHeight, 'F');
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${completedTopics}`, 47.5, statsY + 15, { align: 'center' });
     doc.setFontSize(10);
+    doc.text('Topics', 47.5, statsY + 25, { align: 'center' });
+    
+    // Study Time Box
+    doc.rect(80, statsY, boxWidth, boxHeight, 'F');
+    doc.setFontSize(18);
+    doc.text(`${Math.floor(totalStudyTime / 3600)}h`, 102.5, statsY + 15, { align: 'center' });
+    doc.setFontSize(10);
+    doc.text('Study Time', 102.5, statsY + 25, { align: 'center' });
+    
+    // Level Box
+    doc.rect(135, statsY, boxWidth, boxHeight, 'F');
+    doc.setFontSize(18);
+    doc.text(`L${gameState.level || 1}`, 157.5, statsY + 15, { align: 'center' });
+    doc.setFontSize(10);
+    doc.text('Level', 157.5, statsY + 25, { align: 'center' });
+    
+    // Date and user info
+    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255, 0.8);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 250, { align: 'center' });
+    doc.text(`Level ${gameState.level || 1} Coding Hero • ${gameState.xp || 0} XP`, 105, 265, { align: 'center' });
+    
+    // New Page - Detailed Progress
+    doc.addPage();
+    doc.setFillColor(255, 255, 255);
+    doc.rect(0, 0, 210, 297, 'F');
+    
+    // Header
+    doc.setTextColor(...primaryColor);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📊 Detailed Progress Overview', 20, 30);
+    
+    // Decorative line
+    doc.setDrawColor(...accentColor);
+    doc.setLineWidth(2);
+    doc.line(20, 35, 190, 35);
+    
+    // Progress Overview Section
+    doc.setTextColor(...textColor);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🎯 Achievement Summary', 20, 55);
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    let yPos = 70;
+    
+    const achievements = [
+      `📈 Overall Progress: ${overallProgress}% Complete`,
+      `🏆 Topics Mastered: ${completedTopics} out of ${allTopics.length}`,
+      `⏰ Total Study Time: ${Math.floor(totalStudyTime / 3600)}h ${Math.floor((totalStudyTime % 3600) / 60)}m`,
+      `🎮 Current Level: ${gameState.level || 1}`,
+      `⭐ Experience Points: ${gameState.xp || 0} XP`,
+      `🔥 Study Streak: ${gameState.streak || 0} days`,
+      `📚 Study Sessions: ${sessionNotes.length} completed`
+    ];
+    
+    achievements.forEach((achievement) => {
+      doc.text(achievement, 30, yPos);
+      yPos += 12;
+    });
+    
+    // Topic Progress Section
+    yPos += 20;
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primaryColor);
+    doc.text('🎯 Topic Mastery Breakdown', 20, yPos);
+    yPos += 20;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...textColor);
     
     allTopics.forEach((topic, index) => {
-      if (yPosition > 270) {
+      if (yPos > 270) {
         doc.addPage();
-        yPosition = 20;
+        yPos = 30;
       }
       
       const topicProgress = calculateTopicProgress(topic.id);
       const completed = topic.subtopics.filter(sub => progress[topic.id]?.[sub.id]).length;
       
-      doc.text(`${topic.icon} ${topic.name}: ${topicProgress}% (${completed}/${topic.subtopics.length})`, 30, yPosition);
-      yPosition += 10;
+      // Progress bar simulation
+      doc.setFillColor(...lightGray);
+      doc.rect(30, yPos - 3, 100, 4, 'F');
+      doc.setFillColor(...accentColor);
+      doc.rect(30, yPos - 3, (topicProgress / 100) * 100, 4, 'F');
+      
+      doc.setTextColor(...textColor);
+      doc.text(`${topic.icon} ${topic.name}`, 30, yPos + 8);
+      doc.text(`${topicProgress}% (${completed}/${topic.subtopics.length})`, 140, yPos + 8);
+      
+      yPos += 15;
     });
     
-    // Recent Sessions
+    // Recent Study Sessions
     if (sessionNotes.length > 0) {
-      if (yPosition > 200) {
+      if (yPos > 200) {
         doc.addPage();
-        yPosition = 20;
+        yPos = 30;
       } else {
-        yPosition += 20;
+        yPos += 20;
       }
       
       doc.setFontSize(16);
-      doc.text('📚 Recent Study Sessions', 20, yPosition);
-      yPosition += 15;
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...primaryColor);
+      doc.text('📚 Recent Study Sessions', 20, yPos);
+      yPos += 20;
       
       doc.setFontSize(10);
-      const recentSessions = sessionNotes.slice(-10).reverse();
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...textColor);
+      
+      const recentSessions = sessionNotes.slice(-8).reverse();
       
       recentSessions.forEach((session) => {
-        if (yPosition > 270) {
+        if (yPos > 270) {
           doc.addPage();
-          yPosition = 20;
+          yPos = 30;
         }
         
         const sessionDate = new Date(session.date).toLocaleDateString();
-        doc.text(`${sessionDate}: ${session.formattedDuration}`, 30, yPosition);
+        doc.text(`📅 ${sessionDate}`, 30, yPos);
+        doc.text(`⏱️ ${session.formattedDuration}`, 100, yPos);
+        
         if (session.note) {
-          yPosition += 8;
+          yPos += 8;
           doc.setFontSize(9);
-          doc.setTextColor(100, 100, 100);
-          doc.text(`Note: ${session.note.substring(0, 80)}`, 35, yPosition);
+          doc.setTextColor(...lightGray);
+          doc.text(`💭 ${session.note.substring(0, 70)}${session.note.length > 70 ? '...' : ''}`, 35, yPos);
           doc.setFontSize(10);
-          doc.setTextColor(0, 0, 0);
+          doc.setTextColor(...textColor);
         }
-        yPosition += 12;
+        yPos += 15;
       });
     }
     
-    // Achievements
+    // Achievements Page
     if (gameState.achievements && gameState.achievements.length > 0) {
-      if (yPosition > 200) {
-        doc.addPage();
-        yPosition = 20;
-      } else {
-        yPosition += 20;
-      }
+      doc.addPage();
+      yPos = 30;
       
       doc.setFontSize(16);
-      doc.text('🏆 Achievements Unlocked', 20, yPosition);
-      yPosition += 15;
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...primaryColor);
+      doc.text('🏆 Unlocked Achievements', 20, yPos);
+      yPos += 20;
       
-      doc.setFontSize(10);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...textColor);
+      
       gameState.achievements.forEach((achievement) => {
-        if (yPosition > 270) {
+        if (yPos > 270) {
           doc.addPage();
-          yPosition = 20;
+          yPos = 30;
         }
-        doc.text(`• ${achievement}`, 30, yPosition);
-        yPosition += 10;
+        doc.text(`🎖️ ${achievement}`, 30, yPos);
+        yPos += 12;
       });
     }
     
-    // Footer
+    // Credits and Contact Page
+    doc.addPage();
+    
+    // Background gradient effect
+    doc.setFillColor(248, 250, 252);
+    doc.rect(0, 0, 210, 297, 'F');
+    
+    // Header section
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 60, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🚀 Created with Passion', 105, 35, { align: 'center' });
+    
+    // Main content
+    doc.setTextColor(...textColor);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('👨‍💻 About the Creator', 105, 90, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('This DSA Adventure Quest tracker was crafted with love and dedication', 105, 110, { align: 'center' });
+    doc.text('to help developers master Data Structures and Algorithms in a fun,', 105, 125, { align: 'center' });
+    doc.text('gamified way. Every feature is designed to make learning enjoyable!', 105, 140, { align: 'center' });
+    
+    // Contact section with styled boxes
+    yPos = 170;
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primaryColor);
+    doc.text('📞 Get in Touch', 105, yPos, { align: 'center' });
+    
+    yPos += 25;
+    
+    // Contact info boxes
+    const contactItems = [
+      { icon: '🌐', label: 'Website', value: 'https://www.dev-anshul.tech/' },
+      { icon: '📧', label: 'Email', value: 'Contact available on website' },
+      { icon: '📱', label: 'Phone', value: 'Contact details on website' }
+    ];
+    
+    contactItems.forEach((item, index) => {
+      // Box background
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(...accentColor);
+      doc.setLineWidth(1);
+      doc.rect(30, yPos - 5, 150, 20, 'FD');
+      
+      doc.setTextColor(...textColor);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${item.icon} ${item.label}:`, 35, yPos + 5);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...accentColor);
+      doc.text(item.value, 35, yPos + 15);
+      
+      yPos += 35;
+    });
+    
+    // Footer message
+    yPos += 20;
+    doc.setTextColor(...lightGray);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Thank you for using DSA Adventure Quest!', 105, yPos, { align: 'center' });
+    doc.text('Keep coding, keep learning, keep growing! 🌟', 105, yPos + 12, { align: 'center' });
+    
+    // Decorative elements
+    doc.setDrawColor(...accentColor);
+    doc.setLineWidth(2);
+    doc.line(60, yPos + 25, 150, yPos + 25);
+    
+    // Final branding
+    doc.setTextColor(...primaryColor);
     doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Generated by DSA Tracker - Your Coding Adventure Companion', 20, doc.internal.pageSize.height - 10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🏰 DSA Adventure Quest - Your Coding Journey Companion', 105, 285, { align: 'center' });
     
     // Save the PDF
-    doc.save(`DSA-Progress-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+    const fileName = `DSA-Adventure-Report-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
     
     toast({
-      title: "📄 PDF Report Generated!",
-      description: "Your learning progress report has been downloaded successfully!",
-      duration: 3000,
+      title: "🎉 Epic Report Generated!",
+      description: "Your beautifully crafted learning progress report has been downloaded! Share your achievements with pride! ✨",
+      duration: 5000,
     });
   };
 
@@ -341,10 +525,15 @@ const DSATracker = () => {
             <Button
               variant="outline"
               onClick={generatePDFReport}
-              className="flex items-center space-x-2 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-green-50 to-emerald-50 backdrop-blur-sm border-2 hover:border-green-500/50 hover:shadow-xl text-green-700 font-semibold px-6 py-3"
+              className="flex items-center space-x-3 hover:scale-105 transition-all duration-300 bg-gradient-to-r from-emerald-50 via-green-50 to-teal-50 backdrop-blur-sm border-2 hover:border-emerald-500/50 hover:shadow-2xl text-emerald-700 font-bold px-8 py-4 rounded-2xl group relative overflow-hidden"
             >
-              <FileText className="h-5 w-5" />
-              <span>Generate Report</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-green-400/20 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+              <Download className="h-6 w-6 group-hover:animate-bounce relative z-10" />
+              <div className="flex flex-col items-start relative z-10">
+                <span className="text-lg">Generate Epic Report</span>
+                <span className="text-xs opacity-75">Download your adventure progress!</span>
+              </div>
+              <Sparkles className="h-4 w-4 text-yellow-500 group-hover:animate-spin relative z-10" />
             </Button>
             <Button
               variant="outline"
