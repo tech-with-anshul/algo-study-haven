@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -178,7 +179,7 @@ const DSATracker = () => {
     const lightGray = [156, 163, 175];
     
     // Cover Page - Enhanced Design
-    doc.setFillColor(88, 28, 135);
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.rect(0, 0, 210, 297, 'F'); // Full page background
     
     // Decorative header
@@ -246,18 +247,18 @@ const DSATracker = () => {
     doc.rect(0, 0, 210, 297, 'F');
     
     // Header
-    doc.setTextColor(...primaryColor);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
     doc.text('📊 Detailed Progress Overview', 20, 30);
     
     // Decorative line
-    doc.setDrawColor(...accentColor);
+    doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
     doc.setLineWidth(2);
     doc.line(20, 35, 190, 35);
     
     // Progress Overview Section
-    doc.setTextColor(...textColor);
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.text('🎯 Achievement Summary', 20, 55);
@@ -285,13 +286,13 @@ const DSATracker = () => {
     yPos += 20;
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...primaryColor);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text('🎯 Topic Mastery Breakdown', 20, yPos);
     yPos += 20;
     
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...textColor);
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     
     allTopics.forEach((topic, index) => {
       if (yPos > 270) {
@@ -303,12 +304,12 @@ const DSATracker = () => {
       const completed = topic.subtopics.filter(sub => progress[topic.id]?.[sub.id]).length;
       
       // Progress bar simulation
-      doc.setFillColor(...lightGray);
+      doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
       doc.rect(30, yPos - 3, 100, 4, 'F');
-      doc.setFillColor(...accentColor);
+      doc.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.rect(30, yPos - 3, (topicProgress / 100) * 100, 4, 'F');
       
-      doc.setTextColor(...textColor);
+      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       doc.text(`${topic.icon} ${topic.name}`, 30, yPos + 8);
       doc.text(`${topicProgress}% (${completed}/${topic.subtopics.length})`, 140, yPos + 8);
       
@@ -326,13 +327,13 @@ const DSATracker = () => {
       
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...primaryColor);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text('📚 Recent Study Sessions', 20, yPos);
       yPos += 20;
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...textColor);
+      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       
       const recentSessions = sessionNotes.slice(-8).reverse();
       
@@ -349,10 +350,10 @@ const DSATracker = () => {
         if (session.note) {
           yPos += 8;
           doc.setFontSize(9);
-          doc.setTextColor(...lightGray);
+          doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
           doc.text(`💭 ${session.note.substring(0, 70)}${session.note.length > 70 ? '...' : ''}`, 35, yPos);
           doc.setFontSize(10);
-          doc.setTextColor(...textColor);
+          doc.setTextColor(textColor[0], textColor[1], textColor[2]);
         }
         yPos += 15;
       });
@@ -365,13 +366,13 @@ const DSATracker = () => {
       
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...primaryColor);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text('🏆 Unlocked Achievements', 20, yPos);
       yPos += 20;
       
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...textColor);
+      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       
       gameState.achievements.forEach((achievement) => {
         if (yPos > 270) {
@@ -391,7 +392,7 @@ const DSATracker = () => {
     doc.rect(0, 0, 210, 297, 'F');
     
     // Header section
-    doc.setFillColor(...primaryColor);
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.rect(0, 0, 210, 60, 'F');
     
     doc.setTextColor(255, 255, 255);
@@ -400,7 +401,7 @@ const DSATracker = () => {
     doc.text('🚀 Created with Passion', 105, 35, { align: 'center' });
     
     // Main content
-    doc.setTextColor(...textColor);
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.text('👨‍💻 About the Creator', 105, 90, { align: 'center' });
@@ -415,7 +416,7 @@ const DSATracker = () => {
     yPos = 170;
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...primaryColor);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text('📞 Get in Touch', 105, yPos, { align: 'center' });
     
     yPos += 25;
@@ -430,16 +431,16 @@ const DSATracker = () => {
     contactItems.forEach((item, index) => {
       // Box background
       doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(...accentColor);
+      doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.setLineWidth(1);
       doc.rect(30, yPos - 5, 150, 20, 'FD');
       
-      doc.setTextColor(...textColor);
+      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.text(`${item.icon} ${item.label}:`, 35, yPos + 5);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...accentColor);
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text(item.value, 35, yPos + 15);
       
       yPos += 35;
@@ -447,19 +448,19 @@ const DSATracker = () => {
     
     // Footer message
     yPos += 20;
-    doc.setTextColor(...lightGray);
+    doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('Thank you for using DSA Adventure Quest!', 105, yPos, { align: 'center' });
     doc.text('Keep coding, keep learning, keep growing! 🌟', 105, yPos + 12, { align: 'center' });
     
     // Decorative elements
-    doc.setDrawColor(...accentColor);
+    doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
     doc.setLineWidth(2);
     doc.line(60, yPos + 25, 150, yPos + 25);
     
     // Final branding
-    doc.setTextColor(...primaryColor);
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
     doc.text('🏰 DSA Adventure Quest - Your Coding Journey Companion', 105, 285, { align: 'center' });
