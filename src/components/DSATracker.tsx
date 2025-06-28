@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,10 +14,12 @@ import SessionModal from './SessionModal';
 import GameStats from './GameStats';
 import QuestSystem from './QuestSystem';
 import AdventureTheme from './AdventureTheme';
+import CustomTopicsManager from './CustomTopicsManager';
 import { toast } from '@/hooks/use-toast';
 
 const DSATracker = () => {
   const [progress, setProgress] = useLocalStorage('dsa-progress', {});
+  const [customTopics, setCustomTopics] = useLocalStorage('custom-topics', []);
   const [sessionNotes, setSessionNotes] = useLocalStorage('dsa-session-notes', []);
   const [darkMode, setDarkMode] = useLocalStorage('dark-mode', false);
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -29,6 +30,9 @@ const DSATracker = () => {
   const { syncToSheets, isLoading: isSyncing } = useGoogleSheets();
   const { gameState, quests, onSubtopicComplete, onTopicComplete, onStudySession, completeQuest } = useGameSystem();
 
+  // Combine default topics with custom topics
+  const allTopics = [...dsaTopics, ...customTopics];
+
   // Enhanced breathing animation with multiple states
   useEffect(() => {
     if (isRunning) {
@@ -38,6 +42,27 @@ const DSATracker = () => {
       return () => clearInterval(interval);
     }
   }, [isRunning]);
+
+  const handleCustomTopicCreate = (topic: any) => {
+    setCustomTopics(prev => [...prev, topic]);
+    
+    // Initialize progress for the new custom topic
+    setProgress(prev => ({
+      ...prev,
+      [topic.id]: {}
+    }));
+  };
+
+  const handleCustomTopicDelete = (topicId: string) => {
+    setCustomTopics(prev => prev.filter(topic => topic.id !== topicId));
+    
+    // Clean up progress for deleted topic
+    setProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress[topicId];
+      return newProgress;
+    });
+  };
 
   const toggleSubtopic = (topicId: string, subtopicId: string) => {
     const wasCompleted = progress[topicId]?.[subtopicId];
@@ -55,7 +80,7 @@ const DSATracker = () => {
       onSubtopicComplete();
       
       // Check if topic is now complete
-      const topic = dsaTopics.find(t => t.id === topicId);
+      const topic = allTopics.find(t => t.id === topicId);
       if (topic) {
         const completedCount = topic.subtopics.filter(sub => 
           progress[topicId]?.[sub.id] || sub.id === subtopicId
@@ -83,7 +108,7 @@ const DSATracker = () => {
   };
 
   const calculateTopicProgress = (topicId: string) => {
-    const topic = dsaTopics.find(t => t.id === topicId);
+    const topic = allTopics.find(t => t.id === topicId);
     if (!topic) return 0;
     
     const completed = topic.subtopics.filter(sub => 
@@ -94,15 +119,15 @@ const DSATracker = () => {
   };
 
   const calculateOverallProgress = () => {
-    const totalSubtopics = dsaTopics.reduce((acc, topic) => acc + topic.subtopics.length, 0);
-    const completedSubtopics = dsaTopics.reduce((acc, topic) => {
+    const totalSubtopics = allTopics.reduce((acc, topic) => acc + topic.subtopics.length, 0);
+    const completedSubtopics = allTopics.reduce((acc, topic) => {
       const completed = topic.subtopics.filter(sub => 
         progress[topic.id]?.[sub.id]
       ).length;
       return acc + completed;
     }, 0);
     
-    return Math.round((completedSubtopics / totalSubtopics) * 100);
+    return totalSubtopics > 0 ? Math.round((completedSubtopics / totalSubtopics) * 100) : 0;
   };
 
   const formatTime = (seconds: number) => {
@@ -152,8 +177,9 @@ const DSATracker = () => {
           action: 'syncProgress',
           progress,
           sessionNotes,
-          topics: dsaTopics,
-          gameState
+          topics: allTopics,
+          gameState,
+          customTopics
         })
       });
       
@@ -181,6 +207,7 @@ const DSATracker = () => {
       progress,
       sessionNotes,
       gameState,
+      customTopics,
       exportDate: new Date().toISOString(),
       totalStudyTime: sessionNotes.reduce((acc, session) => acc + session.duration, 0),
       overallProgress: calculateOverallProgress()
@@ -211,7 +238,7 @@ const DSATracker = () => {
 
   const overallProgress = calculateOverallProgress();
   const totalStudyTime = sessionNotes.reduce((acc, session) => acc + session.duration, 0);
-  const completedTopics = dsaTopics.filter(topic => calculateTopicProgress(topic.id) === 100).length;
+  const completedTopics = allTopics.filter(topic => calculateTopicProgress(topic.id) === 100).length;
 
   return (
     <AdventureTheme level={gameState.level} xp={gameState.xp} streak={gameState.streak}>
@@ -232,7 +259,7 @@ const DSATracker = () => {
             <div className="flex items-center space-x-4 mt-4">
               <Badge variant="secondary" className="px-4 py-2 text-base hover:scale-105 transition-transform cursor-pointer bg-gradient-to-r from-green-100 to-emerald-100 border-green-300">
                 <Trophy className="h-5 w-5 mr-2" />
-                {completedTopics}/{dsaTopics.length} Realms Conquered
+                {completedTopics}/{allTopics.length} Realms Conquered
               </Badge>
               <Badge variant="outline" className="px-4 py-2 text-base hover:scale-105 transition-transform cursor-pointer border-primary/30 bg-gradient-to-r from-blue-50 to-indigo-50">
                 <Target className="h-5 w-5 mr-2" />
@@ -286,6 +313,14 @@ const DSATracker = () => {
 
         {/* Quest System */}
         <QuestSystem quests={quests} onQuestComplete={completeQuest} />
+
+        {/* Custom Topics Manager */}
+        <CustomTopicsManager
+          customTopics={customTopics}
+          onTopicCreate={handleCustomTopicCreate}
+          onTopicDelete={handleCustomTopicDelete}
+          progress={progress}
+        />
 
         {/* Study Timer with Epic Styling */}
         <Card className="mb-8 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10 border-2 border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-500">
@@ -342,7 +377,7 @@ const DSATracker = () => {
 
         {/* Enhanced Topics Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {dsaTopics.map((topic, index) => (
+          {allTopics.map((topic, index) => (
             <div 
               key={topic.id} 
               className="animate-fade-in hover:scale-[1.01] transition-all duration-300"
