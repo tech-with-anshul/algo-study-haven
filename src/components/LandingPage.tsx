@@ -333,104 +333,48 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <Badge className="mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 text-lg rounded-full">
-              Meet the Visionary
+              Meet the Team
             </Badge>
             <h2 className="text-5xl font-bold text-gray-900 mb-6">
-              The Creator
+              The Team
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover the passionate developer behind this revolutionary learning platform
+              Discover the passionate developers behind this revolutionary learning platform
             </p>
           </div>
           
-          <Card className="max-w-5xl mx-auto border-2 border-purple-100 hover:border-purple-200 shadow-2xl hover:shadow-3xl transition-all duration-700 group rounded-3xl overflow-hidden">
-            <CardContent className="p-12">
-              <div className="flex flex-col lg:flex-row items-center gap-12">
-                {/* Profile Image */}
-                <div className="flex-shrink-0">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full animate-pulse opacity-20"></div>
-                    <img 
-                      src="https://res.cloudinary.com/djrttnwvt/image/upload/v1750468177/DAY_1_ppbvml.jpg" 
-                      alt="Anshul - The Creator"
-                      className="w-80 h-80 object-cover rounded-full border-4 border-purple-200 shadow-2xl hover:scale-110 transition-transform duration-500 group-hover:border-purple-400 relative z-10"
-                    />
-                    <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-full shadow-2xl group-hover:scale-125 transition-transform duration-500 z-20">
-                      <Code className="h-8 w-8" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {[
+              { name: 'Vanshika', id: '23bca0151', color: 'from-purple-500 to-indigo-500' },
+              { name: 'Janvi', id: '23bca0118', color: 'from-pink-500 to-rose-500' },
+              { name: 'Gaurav Chauhan', id: '23bca0134', color: 'from-blue-500 to-cyan-500' },
+              { name: 'Lakhan Negi', id: '23bca0155', color: 'from-green-500 to-emerald-500' }
+            ].map((member, index) => (
+              <Card key={index} className="border-2 border-purple-100 hover:border-purple-200 shadow-xl hover:shadow-2xl transition-all duration-500 group rounded-2xl overflow-hidden">
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-6">
+                      <div className={`absolute inset-0 bg-gradient-to-r ${member.color} rounded-full animate-pulse opacity-20`}></div>
+                      <div className={`w-32 h-32 bg-gradient-to-r ${member.color} rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500 relative z-10`}>
+                        <Users className="h-16 w-16 text-white" />
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                {/* Creator Info */}
-                <div className="flex-1 text-center lg:text-left">
-                  <h3 className="text-4xl font-bold text-gray-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
-                    Anshul
-                  </h3>
-                  <Badge className="mb-6 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-lg px-6 py-3 hover:scale-110 transition-transform duration-300 rounded-full shadow-lg">
-                    Full Stack Developer & Educator
-                  </Badge>
-                  
-                  <p className="text-xl text-gray-600 mb-8 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
-                    Passionate about creating innovative educational tools that make learning programming 
-                    concepts engaging and accessible. With expertise in modern web technologies, I've crafted 
-                    this gamified platform to transform how developers master Data Structures and Algorithms.
-                  </p>
-                  
-                  {/* Contact Links */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <a 
-                      href="https://www.dev-anshul.tech/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 rounded-xl border-2 border-purple-200 hover:border-purple-300 transition-all duration-300 group/link hover:scale-105 shadow-lg"
-                    >
-                      <Globe className="h-6 w-6 text-purple-600 group-hover/link:scale-125 transition-transform" />
-                      <span className="font-semibold text-purple-700">Official Website</span>
-                    </a>
                     
-                    <a 
-                      href="mailto:kanshulmussoorie@gmail.com"
-                      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-xl border-2 border-green-200 hover:border-green-300 transition-all duration-300 group/link hover:scale-105 shadow-lg"
-                    >
-                      <Mail className="h-6 w-6 text-green-600 group-hover/link:scale-125 transition-transform" />
-                      <span className="font-semibold text-green-700">Email</span>
-                    </a>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors duration-300">
+                      {member.name}
+                    </h3>
+                    <Badge className={`bg-gradient-to-r ${member.color} text-white text-sm px-4 py-2 hover:scale-110 transition-transform duration-300 rounded-full shadow-lg mb-4`}>
+                      {member.id}
+                    </Badge>
                     
-                    <a 
-                      href="tel:+919410147660"
-                      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 rounded-xl border-2 border-blue-200 hover:border-blue-300 transition-all duration-300 group/link hover:scale-105 shadow-lg"
-                    >
-                      <Phone className="h-6 w-6 text-blue-600 group-hover/link:scale-125 transition-transform" />
-                      <span className="font-semibold text-blue-700">+91 9410147660</span>
-                    </a>
-                    
-                    <a 
-                      href="https://www.linkedin.com/in/anshultech1" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 hover:from-indigo-100 hover:to-blue-100 rounded-xl border-2 border-indigo-200 hover:border-indigo-300 transition-all duration-300 group/link hover:scale-105 shadow-lg"
-                    >
-                      <Linkedin className="h-6 w-6 text-indigo-600 group-hover/link:scale-125 transition-transform" />
-                      <span className="font-semibold text-indigo-700">LinkedIn</span>
-                    </a>
+                    <p className="text-gray-600 leading-relaxed">
+                      Team member contributing to this innovative educational platform
+                    </p>
                   </div>
-                  
-                  {/* GitHub Link */}
-                  <div className="text-center">
-                    <a 
-                      href="https://github.com/tech-with-anshul" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 p-4 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl transition-all duration-300 group/github shadow-2xl hover:shadow-3xl hover:scale-105"
-                    >
-                      <Github className="h-6 w-6 group-hover/github:scale-125 transition-transform" />
-                      <span className="font-semibold text-lg">Follow on GitHub</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -490,7 +434,7 @@ const LandingPage = () => {
               </Button>
             </div>
             <div className="border-t border-gray-800 pt-8">
-              <p className="text-gray-500">© 2024 DSA Tracker. Created with ❤️ by Anshul</p>
+              <p className="text-gray-500">© 2024 DSA Tracker. Created with ❤️ by Vanshika, Janvi, Gaurav Chauhan & Lakhan Negi</p>
             </div>
           </div>
         </div>

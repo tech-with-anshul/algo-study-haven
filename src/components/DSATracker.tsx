@@ -396,9 +396,9 @@ const DSATracker = () => {
     yPos += 25;
     
     const contactInfo = [
-      { label: 'Website', value: 'https://www.dev-anshul.tech/' },
-      { label: 'Email', value: 'Available on website' },
-      { label: 'Phone', value: 'Contact details on website' }
+      { label: 'Team Members', value: 'Vanshika (23bca0151), Janvi (23bca0118)' },
+      { label: '', value: 'Gaurav Chauhan (23bca0134), Lakhan Negi (23bca0155)' },
+      { label: 'Project', value: 'DSA Tracker - Gamified Learning Platform' }
     ];
     
     contactInfo.forEach((info) => {
